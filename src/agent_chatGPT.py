@@ -3,9 +3,9 @@ import random
 from collections import deque
 
 import numpy as np
-from keras.layers import Dense
-from keras.models import Sequential
-from keras.optimizers import Adam
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.optimizers import Adam
 
 # Defining hyperparameters
 m = 5  # number of cities, ranges from 1 ..... m
@@ -45,23 +45,17 @@ class DQNAgent:
         model.summary
         return model
 
-    def inverse_time_decay(self, initial_epsilon, decay_rate, episode):
-        return initial_epsilon / (1 + decay_rate * episode)
+    def inverse_time_decay(self, initial_epsilon, decay_rate, step):
+        return initial_epsilon / (1 + decay_rate * step)
 
-    def get_action(self, state, possible_actions_index, episode):
+    def get_action(self, state, possible_actions_index):
         """get action from model using epsilon-greedy policy"""
         """
         The chatGPT generated function is only choosing a random action or the action with the highest predicted Q-value.
         It should also be considering the possible actions that are available in the current state.
-        Additionally, the function is only decreasing epsilon after each episode, while it should be decreasing epsilon after each sample.
+        Additionally, the function was only decreasing epsilon after each episode, while it should be decreasing epsilon after each sample.
         I don't want to pass the environment class as a parameter to access the env.requests() function. We'll just pass the possible action indices and actions an rewrite this function.
-        the episode integer is also passed as an input for the epsilon decay strategy.
 		"""
-        # check if epsilon is greater than minimum value
-        if self.epsilon > self.epsilon_min:
-            self.epsilon = self.inverse_time_decay(
-                self.epsilon, self.epsilon_decay, episode) # Decrease epsilon after each sample
-            # self.epsilon += self.epsilon_decay  
         if np.random.rand() <= self.epsilon:
             # explore: choose a random action from possible actions
             return random.choice(possible_actions_index)
@@ -105,8 +99,10 @@ class DQNAgent:
         states, actions, rewards, next_states, dones = zip(*mini_batch)
 
         # Use numpy operations to convert states and next_states to vectors
-        update_input = np.array([self.convert_state_to_vector(state) for state in states])
-        update_output = np.array([self.convert_state_to_vector(next_state) for next_state in next_states])
+        update_input = np.array(
+            [self.convert_state_to_vector(state) for state in states])
+        update_output = np.array([self.convert_state_to_vector(
+            next_state) for next_state in next_states])
 
         target = self.model.predict(update_input, verbose=0)
         target_qval = self.model.predict(update_output, verbose=0)
