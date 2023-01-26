@@ -3,9 +3,9 @@ import random
 from collections import deque
 
 import numpy as np
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.optimizers import Adam
+from keras.layers import Dense
+from keras.models import Sequential
+from keras.optimizers import Adam
 
 # Defining hyperparameters
 m = 5  # number of cities, ranges from 1 ..... m
@@ -18,12 +18,12 @@ class DQNAgent:
         self.state_size = state_size
         self.action_size = action_size
         # Hyperparameters for the DQN
-        self.discount_factor = 0.99
-        self.learning_rate = 0.001
+        self.discount_factor = 0.95
+        self.learning_rate = 0.01
         # Added a hyperparameter for epsilon
         self.epsilon = 1.0
         self.epsilon_max = 1.0
-        self.epsilon_decay = 0.0001
+        self.epsilon_decay = 0.001
         self.epsilon_min = 0.01
 
         self.batch_size = 32
