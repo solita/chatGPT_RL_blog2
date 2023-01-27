@@ -83,6 +83,7 @@ class CabDriver():
         pickup, dropoff = action
         current_state, current_h, current_d = state
         if action == [0, 0]:
+            # add idle time
             total_ride_time = 1
             reward = (total_ride_time * R) - (total_ride_time * C)
         else:
