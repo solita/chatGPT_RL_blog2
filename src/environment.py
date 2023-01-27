@@ -82,30 +82,25 @@ class CabDriver():
 		"""
         pickup, dropoff = action
         current_state, current_h, current_d = state
-        if action == [0, 0]:
-            # add idle time
-            total_ride_time = 1
-            reward = (total_ride_time * R) - (total_ride_time * C)
-        else:
-            """
-            Here chatGPT is calculating the travel time from A>B and updating the location.
-            chatGPT is doing a mistake, hour and day in a state tuple are integers.
-            This way of calculating the time from A to B results in returning arrays for h and d
-            this is due to the fact that chatGPT is slicing the 4D TimeMatrix in a wrong manner.
-            chatGPT is using two sets of indices pickup and dropoff to slice the array.
-            4 indices are actually needed to slice the array in a correct way. I'll break the time
-            calculation to multiple steps for clarity
-            """
-            # if offline action then move time by 1
-            wait_time = 1 if action == [0, 0] else 0
-            # ride time from current state (location) to next pickup location
-            transit_time = Time_matrix[current_state][pickup
-                                                      ][current_h][current_d] if pickup != current_state else 0
-            # ride time from the pickup location to next dropoff (next state)
-            ride_time = Time_matrix[pickup][dropoff][current_h][current_d
-                                                                ] if pickup != current_state else Time_matrix[current_state][dropoff][current_h][current_d]
-            total_ride_time = wait_time + transit_time + ride_time
-            reward = (total_ride_time * R) - (total_ride_time * C)
+        """
+        Here chatGPT is calculating the travel time from A>B and updating the location.
+        chatGPT is doing a mistake, hour and day in a state tuple are integers.
+        This way of calculating the time from A to B results in returning arrays for h and d
+        this is due to the fact that chatGPT is slicing the 4D TimeMatrix in a wrong manner.
+        chatGPT is using two sets of indices pickup and dropoff to slice the array.
+        4 indices are actually needed to slice the array in a correct way. I'll break the time
+        calculation to multiple steps for clarity
+        """
+        # if offline action then move time by 1
+        wait_time = 1 if action == [0, 0] else 0
+        # ride time from current state (location) to next pickup location
+        transit_time = Time_matrix[current_state][pickup
+                                                  ][current_h][current_d] if pickup != current_state else 0
+        # ride time from the pickup location to next dropoff (next state)
+        ride_time = Time_matrix[pickup][dropoff][current_h][current_d
+                                                            ] if pickup != current_state else Time_matrix[current_state][dropoff][current_h][current_d]
+        total_ride_time = wait_time + transit_time + ride_time
+        reward = (total_ride_time * R) - (total_ride_time * C) if total_ride_time != 0 else -C
         return reward
 
     def next_state_func(self, state, action, Time_matrix):
