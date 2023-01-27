@@ -104,7 +104,7 @@ class CabDriver():
             ride_time = Time_matrix[pickup][dropoff][current_h][current_d
                                                                 ] if pickup != current_state else Time_matrix[current_state][dropoff][current_h][current_d]
             total_ride_time = wait_time + transit_time + ride_time
-            reward = (total_ride_time * R) - (total_ride_time * C) if total_ride_time != 0 else -C
+            reward = (total_ride_time * R) - (total_ride_time * C)
         return reward
 
     def next_state_func(self, state, action, Time_matrix):
